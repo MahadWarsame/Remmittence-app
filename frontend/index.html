@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>velox</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>velox</h1>
+
+    <!-- Auth -->
+    <div id="auth-section">
+        <h2>Login / Register</h2>
+        <input type="text" id="name" placeholder="Name (for register)">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="registerBtn">Register</button>
+        <button id="loginBtn">Login</button>
+        <div id="auth-msg"></div>
+    </div>
+
+    <!-- App -->
+    <div id="app-section" style="display:none;">
+        <h2>Welcome <span id="user-name"></span></h2>
+        <input type="number" id="amount" placeholder="Amount">
+        <select id="fromCurrency">
+            <option value="USD">USD</option>
+            <option value="SEK">SEK</option>
+        </select>
+        <select id="toCurrency">
+            <option value="KES">KES</option>
+            <option value="USD">USD</option>
+            <option value="SEK">SEK</option>
+        </select>
+        <input type="text" id="recipient" placeholder="Recipient number">
+        <button id="createOrderBtn">Create Order</button>
+        <h3>Orders</h3>
+        <ul id="ordersList"></ul>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
