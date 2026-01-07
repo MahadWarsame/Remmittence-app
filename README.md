@@ -1,4 +1,4 @@
-Remittance app
+Remittance-app
 
 A full-stack remittance / money transfer application built with Node.js, Express, and SQLite. The project demonstrates backend API design, authentication middleware, and database handling.
 
@@ -37,6 +37,7 @@ Mahad Warsame Software Developer — Backend Focus
 ![chrome_tSuvm6JN86](https://github.com/user-attachments/assets/3523fd1a-81fe-477d-b530-6b75325f1e35)
 ![chrome_wO2xWUEbpt](https://github.com/user-attachments/assets/c783a3f0-f4cb-4fe6-accf-b1d5edc5f14c)
 ![chrome_YUfCgXxV86](https://github.com/user-attachments/assets/00ddc5b2-35ea-4ec0-8318-738f36b8b030)
+
 
 
 
