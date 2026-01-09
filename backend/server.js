@@ -11,12 +11,11 @@ const adminRoutes = require('./routes/admin');
 const { updateRates } = require('./utils/fx');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 // ---------- CORS ----------
-// Replace with your frontend URL for production
 app.use(cors({
-  origin: 'https://your-frontend-url.vercel.app'
+  origin: 'https://remmittence-app.vercel.app/' // Replace with your Vercel frontend URL
 }));
 
 // ---------- WEBHOOK (raw body) ----------
@@ -33,14 +32,12 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/rates', ratesRoutes);
-app.use('/admin', adminRoutes);       
-app.use('/payments', payments.router); 
+app.use('/admin', adminRoutes);
+app.use('/payments', payments.router);
 
 // ---------- FX update ----------
 updateRates();
 setInterval(updateRates, 60 * 60 * 1000);
 
 // ---------- Start server ----------
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
