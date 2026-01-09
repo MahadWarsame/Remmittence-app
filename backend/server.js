@@ -1,7 +1,5 @@
-// backend/server.js
 require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
@@ -16,39 +14,33 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ---------- CORS ----------
-app.use(cors());
+// Replace with your frontend URL for production
+app.use(cors({
+  origin: 'https://your-frontend-url.vercel.app'
+}));
 
 // ---------- WEBHOOK (raw body) ----------
-/*
-  Stripe requires the webhook endpoint to receive the raw body for signature verification.
-*/
 app.post(
   '/payments/webhook',
   express.raw({ type: 'application/json' }),
   payments.webhookHandler
 );
 
-// ---------- JSON parser for all other routes ----------
+// ---------- JSON parser ----------
 app.use(express.json());
 
 // ---------- API routes ----------
 app.use('/auth', authRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/rates', ratesRoutes);
-app.use('/admin', adminRoutes);        // ✅ Admin after JSON parser
-app.use('/payments', payments.router); // Checkout session route
+app.use('/admin', adminRoutes);       
+app.use('/payments', payments.router); 
 
 // ---------- FX update ----------
 updateRates();
 setInterval(updateRates, 60 * 60 * 1000);
 
-// ---------- Serve frontend ----------
-app.use(express.static(path.join(__dirname, '../frontend')));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
-
 // ---------- Start server ----------
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Server running on port ${port}`);
 });
