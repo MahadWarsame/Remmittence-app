@@ -1,5 +1,8 @@
 // frontend/app.js
-const API_URL = 'http://localhost:3000';
+
+// UPDATE THIS to your actual Render URL
+const API_URL = 'https://remmittence-app.onrender.com'; 
+
 let token = localStorage.getItem('jwtToken') || null;
 
 // Elements
@@ -26,6 +29,7 @@ function showAuth() {
   authSection.style.display = 'block';
   appSection.style.display = 'none';
 }
+
 function showApp(userName) {
   authSection.style.display = 'none';
   appSection.style.display = 'block';
@@ -61,7 +65,7 @@ async function register() {
     showApp(data.name || name);
   } catch (e) {
     console.error('Register error', e);
-    authMsg.textContent = 'Server error';
+    authMsg.textContent = 'Server error - Check CORS/API URL';
   }
 }
 
@@ -91,7 +95,7 @@ async function login() {
     showApp(data.name || email);
   } catch (e) {
     console.error('Login error', e);
-    authMsg.textContent = 'Server error';
+    authMsg.textContent = 'Server error - Check CORS/API URL';
   }
 }
 
@@ -109,7 +113,6 @@ async function loadOrders() {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.status === 401) {
-      // token invalid or expired
       logout();
       return;
     }
@@ -145,7 +148,6 @@ async function createOrderAndPay() {
   if (!amount || !recipient) { alert('Enter amount and recipient'); return; }
 
   try {
-    // create order (endpoint expected: POST /orders/create)
     const resOrder = await fetch(`${API_URL}/orders/create`, {
       method: 'POST',
       headers: {
@@ -157,7 +159,6 @@ async function createOrderAndPay() {
     const orderData = await resOrder.json();
     if (!resOrder.ok) { alert(orderData.error || 'Failed to create order'); return; }
 
-    // create stripe session
     const res = await fetch(`${API_URL}/payments/create-checkout-session`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -170,7 +171,7 @@ async function createOrderAndPay() {
 
   } catch (e) {
     console.error('Create/pay error', e);
-    alert('Error creating order or redirecting to Stripe');
+    alert('Error connecting to backend');
   }
 }
 
@@ -179,12 +180,9 @@ registerBtn.onclick = register;
 loginBtn.onclick = login;
 createOrderBtn.onclick = createOrderAndPay;
 
-// show initial view based on token
 if (token) {
-  // optionally verify token by fetching orders
   loadOrders().then(() => {
-    // we need user's name — call /auth/me if you have it; otherwise show simple
-    userNameEl.textContent = 'You';
+    userNameEl.textContent = 'User';
     authSection.style.display = 'none';
     appSection.style.display = 'block';
   });
