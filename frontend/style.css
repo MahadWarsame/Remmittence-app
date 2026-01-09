@@ -1,9 +1,69 @@
-body{font-family:Arial,sans-serif;background:#f0f2f5;margin:0;padding:0;}
-.container{max-width:600px;margin:40px auto;background:#fff;padding:30px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.1);}
-h1,h2,h3{text-align:center;color:#007bff;}
-input,button,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;font-size:15px;box-sizing:border-box;}
-button{cursor:pointer;background:#007bff;color:#fff;border:none;transition:.2s;}
-button:hover{background:#0056b3;}
-#auth-msg{color:red;text-align:center;margin-top:10px;}
-#ordersList{list-style:none;padding:0;}
-#ordersList li{background:#f8f9fa;padding:10px;border:1px solid #e0e0e0;border-radius:6px;margin-bottom:10px;}
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: #007bff;
+}
+
+input, button, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+button {
+    cursor: pointer;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    transition: .2s;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+#auth-msg {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#ordersList {
+    list-style: none;
+    padding: 0;
+}
+
+#ordersList li {
+    background: #f8f9fa;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+/* Footer styling */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #555;
+}
