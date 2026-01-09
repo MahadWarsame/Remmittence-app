@@ -1,58 +1,55 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-require('dotenv').config();
+const path = require('path');
 
-// Import your modules
-const db = require('./database');
 const authRoutes = require('./routes/auth');
-const orderRoutes = require('./routes/orders');
-const { router: paymentRoutes, webhookHandler } = require('./routes/payments');
+const ordersRoutes = require('./routes/orders');
+const ratesRoutes = require('./routes/rates');
+const payments = require('./routes/payments'); 
+const adminRoutes = require('./routes/admin');
+
+const { updateRates } = require('./utils/fx');
 
 const app = express();
 
-// 1. STRIPE WEBHOOK (Must be before express.json())
-// This handles the "Paid" signal from Stripe
-app.post('/payments/webhook', express.raw({ type: 'application/json' }), webhookHandler);
+// Use the PORT Render gives you, or 10000 as a fallback
+const PORT = process.env.PORT || 10000;
 
-// 2. CORS CONFIGURATION
-// This allows your Lovable and Vercel sites to talk to this server
-const allowedOrigins = [
-  'https://remmittence-app.vercel.app',
-  'https://mahadwarsame.vercel.app',
-  'http://localhost:5173', // For local Lovable development
-  'http://localhost:3000'
-];
-
+// ---------- CORS ----------
+// Important: No trailing slash on the URL
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: 'https://remmittence-app.vercel.app',
   credentials: true
 }));
 
-// 3. MIDDLEWARE
+// ---------- WEBHOOK (raw body) ----------
+// This MUST come before express.json()
+app.post(
+  '/payments/webhook',
+  express.raw({ type: 'application/json' }),
+  payments.webhookHandler
+);
+
+// ---------- JSON parser ----------
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// 4. ROUTES
-app.use('/auth', authRoutes);
-app.use('/orders', orderRoutes);
-app.use('/payments', paymentRoutes);
-
-// Health check route
+// ---------- Health Check ----------
+// This stops the "Cannot GET /" error when visiting the Render URL directly
 app.get('/', (req, res) => {
-  res.send('Mahad Remittance Backend is running!');
+  res.json({ status: 'Backend is live', message: 'API is working' });
 });
 
-// 5. SERVER START
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// ---------- API routes ----------
+app.use('/auth', authRoutes);
+app.use('/orders', ordersRoutes);
+app.use('/rates', ratesRoutes);
+app.use('/admin', adminRoutes);
+app.use('/payments', payments.router);
+
+// ---------- FX update ----------
+updateRates();
+setInterval(updateRates, 60 * 60 * 1000);
+
+// ---------- Start server ----------
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
