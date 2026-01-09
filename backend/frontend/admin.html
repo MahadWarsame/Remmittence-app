@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    #panel { display: none; margin-top: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #eee; }
+  </style>
+</head>
+<body>
+
+<h2>Admin Login</h2>
+<div id="loginForm">
+  <label>Username: <input type="text" id="user"></label>
+  <label>Password: <input type="password" id="pass"></label>
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="panel">
+  <h2>Admin Panel</h2>
+  <button onclick="loadOrders()">Load Orders</button>
+  <table id="ordersTable">
+    <tr>
+      <th>ID</th>
+      <th>From</th>
+      <th>To</th>
+      <th>Amount</th>
+      <th>Recipient</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </table>
+</div>
+
+<script>
+let TOKEN = null;
+const API = 'http://localhost:3000/admin';
+
+// ---------------- LOGIN ----------------
+async function login() {
+  const username = document.getElementById('user').value;
+  const password = document.getElementById('pass').value;
+
+  try {
+    const res = await fetch(`${API}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (data.token) {
+      TOKEN = data.token;
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+      loadOrders();
+    } else {
+      alert(data.error || 'Login failed');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Login error');
+  }
+}
+
+// ---------------- LOAD ORDERS ----------------
+async function loadOrders() {
+  if (!TOKEN) return;
+  try {
+    const res = await fetch(`${API}/orders`, {
+      headers: { Authorization: `Bearer ${TOKEN}` }
+    });
+    const orders = await res.json();
+
+    let table = `
+      <tr>
+        <th>ID</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Amount</th>
+        <th>Recipient</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>`;
+
+    orders.forEach(o => {
+      table += `
+      <tr>
+        <td>${o.id}</td>
+        <td>${o.fromCurrency}</td>
+        <td>${o.toCurrency}</td>
+        <td>${o.finalAmount}</td>
+        <td>${o.recipient}</td>
+        <td>${o.status}</td>
+        <td>
+          <button onclick="complete('${o.id}')">Mark Delivered</button>
+        </td>
+      </tr>`;
+    });
+
+    document.getElementById('ordersTable').innerHTML = table;
+
+  } catch (err) {
+    console.error(err);
+    alert('Failed to load orders');
+  }
+}
+
+// ---------------- COMPLETE ORDER ----------------
+async function complete(orderId) {
+  if (!TOKEN) return;
+  try {
+    const res = await fetch(`${API}/orders/complete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json',
+        Authorization: `Bearer ${TOKEN}`
+      },
+      body: JSON.stringify({ orderId })
+    });
+    const data = await res.json();
+    if (data.success) loadOrders();
+    else alert('Failed to mark delivered');
+  } catch (err) {
+    console.error(err);
+    alert('Error marking order delivered');
+  }
+}
+</script>
+</body>
+</html>
